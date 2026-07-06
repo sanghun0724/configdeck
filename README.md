@@ -27,6 +27,7 @@ everything you've set up.
 
 - Searchable Skills and Agents lists
 - Follows symlinks (e.g. `~/.claude/skills` → external config repo)
+- UI language: System / English / 한국어 / Español / 中文 / 日本語 (Settings → Language, requires a restart to apply)
 - **Everything is editable** through one safe write-back model:
   backup-first → atomic write → stale-guard → preserve every other key.
   Explicit Save, Discard, and Restore-from-backup everywhere.
