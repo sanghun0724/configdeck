@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/icon-1024.png" width="128" alt="Claude Config Dashboard icon" />
+</p>
+
 # Claude Config Dashboard
 
 A native macOS (SwiftUI) app that shows your scattered `~/.claude` configuration
