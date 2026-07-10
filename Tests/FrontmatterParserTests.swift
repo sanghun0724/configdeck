@@ -1,4 +1,5 @@
 import XCTest
+@testable import ClaudeConfigDashboard
 
 final class FrontmatterParserTests: XCTestCase {
 

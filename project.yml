@@ -32,10 +32,10 @@ targets:
     platform: macOS
     sources:
       - Tests
-      # Pure logic compiled directly into the test bundle — no app host needed.
-      - path: Sources/SettingsSerializer.swift
-      - path: Sources/WriteGuard.swift
-      - path: Sources/FrontmatterParser.swift
+    # App-hosted tests: @testable import reaches every internal type (stores,
+    # MCPEdit, …) without listing source files here one by one.
+    dependencies:
+      - target: ClaudeConfigDashboard
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.claudeconfigdashboard.ClaudeConfigDashboardTests

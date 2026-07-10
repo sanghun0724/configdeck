@@ -1,4 +1,5 @@
 import XCTest
+@testable import ClaudeConfigDashboard
 
 final class WriteGuardTests: XCTestCase {
     var dir: URL!
@@ -69,6 +70,15 @@ final class WriteGuardTests: XCTestCase {
         XCTAssertFalse(FileManager.default.fileExists(atPath: file.path))
         XCTAssertEqual(g.backups().count, 1)
         XCTAssertEqual(String(decoding: try Data(contentsOf: g.backups()[0]), as: UTF8.self), "v1")
+    }
+
+    /// Missing file: commit creates it (fresh install bootstrap / deleted-while-editing recovery).
+    func testCommitCreatesMissingFile() throws {
+        let g = guardian()
+        try FileManager.default.removeItem(at: file)
+        try g.commit(Data("v2".utf8), expectedHash: "whatever")
+        XCTAssertEqual(try String(contentsOf: file, encoding: .utf8), "v2")
+        XCTAssertTrue(g.backups().isEmpty)   // nothing existed to back up
     }
 
     /// #7 restore: latest backup content is written back.
