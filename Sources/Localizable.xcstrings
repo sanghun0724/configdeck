@@ -85,6 +85,34 @@
         }
       }
     },
+    "%lld removed · %lld added": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld eliminadas · %lld añadidas"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld 行削除 · %lld 行追加"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "%lld줄 삭제 · %lld줄 추가"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "删除 %lld 行 · 新增 %lld 行"
+          }
+        }
+      }
+    },
     "%lld rules · %lld env": {
       "localizations": {
         "es": {
@@ -561,6 +589,118 @@
         }
       }
     },
+    "Applied — backup created.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aplicado — copia de seguridad creada."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "適用しました — バックアップを作成済み。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "적용됨 — 백업 생성됨."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "已应用 — 已创建备份。"
+          }
+        }
+      }
+    },
+    "Apply": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aplicar"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "適用"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "적용"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用"
+          }
+        }
+      }
+    },
+    "Apply fix": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aplicar corrección"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修正を適用"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수정 적용"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "应用修复"
+          }
+        }
+      }
+    },
+    "Apply with Claude…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aplicar con Claude…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude で適用…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude로 적용…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "使用 Claude 应用…"
+          }
+        }
+      }
+    },
     "Ask": {
       "localizations": {
         "es": {
@@ -641,6 +781,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "向 claude 询问你的配置…"
+          }
+        }
+      }
+    },
+    "Asking Claude for the fix…": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Pidiendo la corrección a Claude…"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude に修正を依頼しています…"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude에게 수정안을 요청하는 중…"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在向 Claude 请求修复…"
           }
         }
       }
@@ -925,6 +1093,34 @@
         }
       }
     },
+    "Claude found nothing to change.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude no encontró nada que cambiar."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude は変更すべき点を見つけませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude가 바꿀 것을 찾지 못했습니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Claude 没有发现需要更改的内容。"
+          }
+        }
+      }
+    },
     "Clear search": {
       "localizations": {
         "es": {
@@ -949,6 +1145,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "清除搜索"
+          }
+        }
+      }
+    },
+    "Close": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Cerrar"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "閉じる"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "닫기"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "关闭"
           }
         }
       }
@@ -2101,6 +2325,34 @@
         }
       }
     },
+    "File too large to preview — edit it manually instead.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Archivo demasiado grande para previsualizar — edítalo manualmente."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ファイルが大きすぎてプレビューできません — 手動で編集してください。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "파일이 너무 커서 미리 볼 수 없습니다 — 직접 편집하세요."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "文件太大，无法预览 — 请手动编辑。"
+          }
+        }
+      }
+    },
     "Filter agents": {
       "localizations": {
         "es": {
@@ -2965,6 +3217,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "拒绝删除 ~/.claude 之外的路径"
+          }
+        }
+      }
+    },
+    "Refusing to edit a path outside ~/.claude": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No se editará una ruta fuera de ~/.claude"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/.claude の外にあるパスは編集しません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "~/.claude 밖의 경로는 편집하지 않습니다"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "拒绝编辑 ~/.claude 之外的路径"
           }
         }
       }
@@ -3949,6 +4229,34 @@
         }
       }
     },
+    "The fix came back empty — nothing was changed.": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "La corrección llegó vacía — no se cambió nada."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "修正が空で返されたため、何も変更されませんでした。"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "수정안이 비어 있어 아무것도 변경하지 않았습니다."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "返回的修复为空 — 未做任何更改。"
+          }
+        }
+      }
+    },
     "The model didn't return a usable list. Raw reply:\n%@": {
       "localizations": {
         "es": {
@@ -4813,6 +5121,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "“%@”将从列表中移除。在你保存之前不会写入磁盘,且“放弃更改”仍可撤销此操作。"
+          }
+        }
+      }
+    },
+    "⋯ %lld unchanged lines": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⋯ %lld líneas sin cambios"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⋯ 変更なし %lld 行"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⋯ 변경 없는 %lld줄"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "⋯ %lld 行未更改"
           }
         }
       }

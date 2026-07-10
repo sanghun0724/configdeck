@@ -162,7 +162,7 @@ private struct AnalyzePane: View {
                         .padding(.bottom, 30)
                     VStack(spacing: 12) {
                         ForEach(suggestions) { s in
-                            SuggestionCard(suggestion: s, onChange: onChange)
+                            SuggestionCard(suggestion: s, service: assistant.service, onChange: onChange)
                         }
                     }
                 } else if !running {
@@ -304,9 +304,16 @@ private struct AnalyzePane: View {
 
 private struct SuggestionCard: View {
     let suggestion: CleanupSuggestion
+    let service: ClaudeService
     var onChange: () -> Void
     @State private var confirmingDelete: String?
     @State private var deleteError: String?
+    @State private var applyTarget: ApplyTarget?
+
+    private struct ApplyTarget: Identifiable {
+        let path: String
+        var id: String { path }
+    }
 
     private var tone: Color {
         switch suggestion.severity {
@@ -346,6 +353,10 @@ private struct SuggestionCard: View {
                             Button("Delete…") { confirmingDelete = path }
                                 .buttonStyle(GhostButtonStyle())
                         }
+                        if suggestion.action == "edit", isDeletable(path) {
+                            Button("Apply with Claude…") { applyTarget = ApplyTarget(path: path) }
+                                .buttonStyle(GhostButtonStyle())
+                        }
                     }
                 }
                 if let deleteError {
@@ -370,6 +381,9 @@ private struct SuggestionCard: View {
                 .frame(width: 2)
         }
         .shadow(color: Theme.shadow.opacity(0.05), radius: 5, y: 2)
+        .sheet(item: $applyTarget) { target in
+            ApplyFixSheet(suggestion: suggestion, path: target.path, service: service, onApplied: onChange)
+        }
         .confirmationDialog(
             "Delete this file?",
             isPresented: Binding(get: { confirmingDelete != nil }, set: { if !$0 { confirmingDelete = nil } }),
