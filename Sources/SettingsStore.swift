@@ -43,15 +43,39 @@ final class SettingsStore: ObservableObject, GuardedStore {
     private var loadedHash = ""
     private var orig: (allow: [String], ask: [String], deny: [String]) = ([], [], [])
     private var origEnv: [EnvVar] = []
+    /// Raw env values as loaded — untouched entries are written back with their
+    /// original JSON type (bool/number), not coerced to strings.
+    private var origEnvRaw: [String: Any] = [:]
     private var hooksDirty = false
     private let fileURL: URL
     private let guardian: WriteGuard
+    private var watcher: FileWatcher?
 
     init(home: URL = FileManager.default.homeDirectoryForCurrentUser) {
         let claude = home.appending(path: ".claude")
         self.fileURL = claude.appending(path: "settings.json")
         self.guardian = WriteGuard(fileURL: fileURL, backupDir: claude.appending(path: "backups"))
         load()
+        watcher = FileWatcher(url: fileURL) { [weak self] in self?.externalChange() }
+    }
+
+    /// External change detected by the watcher: our own writes are filtered by hash;
+    /// clean state reloads silently, dirty state raises the stale banner instead of
+    /// clobbering the user's edits.
+    private func externalChange() {
+        guard let data = try? Data(contentsOf: fileURL.resolvingSymlinksInPath()) else {
+            isStale = true
+            statusMessage = String(localized: "File removed on disk — Save will recreate it.")
+            return
+        }
+        if WriteGuard.hash(data) == loadedHash { return }
+        if hasChanges {
+            isStale = true
+            statusMessage = String(localized: "Changed on disk — Reload takes the disk version; your unsaved edits are kept until then.")
+        } else {
+            load()
+            statusMessage = String(localized: "Reloaded — the file changed on disk.")
+        }
     }
 
     var hasChanges: Bool {
@@ -70,10 +94,23 @@ final class SettingsStore: ObservableObject, GuardedStore {
         isStale = false
         isError = false
         statusMessage = nil
-        guard let data = try? Data(contentsOf: fileURL.resolvingSymlinksInPath()),
-              let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+        guard let data = try? Data(contentsOf: fileURL.resolvingSymlinksInPath()) else {
+            // Fresh install: no settings.json yet. Editing works — first Save creates it.
+            statusMessage = String(localized: "settings.json doesn't exist yet — it will be created on first save.")
+            root = [:]
+            loadedHash = ""
+            allow = []; ask = []; deny = []
+            orig = ([], [], [])
+            envVars = []
+            origEnv = []
+            origEnvRaw = [:]
+            loadHooks()
+            canRestore = !guardian.backups().isEmpty
+            return
+        }
+        guard let dict = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
             isError = true
-            statusMessage = String(localized: "settings.json not found or invalid")
+            statusMessage = String(localized: "settings.json is not valid JSON — fix it externally or restore a backup.")
             return
         }
         root = dict
@@ -83,13 +120,10 @@ final class SettingsStore: ObservableObject, GuardedStore {
         ask = perms["ask"] as? [String] ?? []
         deny = perms["deny"] as? [String] ?? []
         orig = (allow, ask, deny)
-        if let env = dict["env"] as? [String: Any] {
-            envVars = env
-                .map { EnvVar(key: $0.key, value: String(describing: $0.value)) }
-                .sorted { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending }
-        } else {
-            envVars = []
-        }
+        origEnvRaw = dict["env"] as? [String: Any] ?? [:]
+        envVars = origEnvRaw
+            .map { EnvVar(key: $0.key, value: String(describing: $0.value)) }
+            .sorted { $0.key.localizedCaseInsensitiveCompare($1.key) == .orderedAscending }
         origEnv = envVars
         loadHooks()
         canRestore = !guardian.backups().isEmpty
@@ -217,9 +251,18 @@ final class SettingsStore: ObservableObject, GuardedStore {
             return
         }
         var merged = SettingsSerializer.apply(root: root, allow: allow, ask: ask, deny: deny)
-        // #3: only rewrite env when it actually changed, to avoid coercing untouched values.
+        // #3: only rewrite env when it actually changed — and even then, entries the
+        // user didn't touch keep their original JSON type (bool/number stay as-is).
         if envVars != origEnv {
-            merged["env"] = Dictionary(uniqueKeysWithValues: envVars.map { ($0.key, $0.value) })
+            var env: [String: Any] = [:]
+            for entry in envVars {
+                if let original = origEnvRaw[entry.key], String(describing: original) == entry.value {
+                    env[entry.key] = original
+                } else {
+                    env[entry.key] = entry.value
+                }
+            }
+            merged["env"] = env
         }
         if hooksDirty {
             let hooks = rebuiltHooks()
@@ -235,6 +278,7 @@ final class SettingsStore: ObservableObject, GuardedStore {
             loadedHash = WriteGuard.hash(data)
             orig = (allow, ask, deny)
             origEnv = envVars
+            origEnvRaw = merged["env"] as? [String: Any] ?? [:]
             loadHooks()   // refresh raw groups + clear dirty
             canRestore = true
             statusMessage = String(localized: "Saved — backup created.")
@@ -246,11 +290,23 @@ final class SettingsStore: ObservableObject, GuardedStore {
         }
     }
 
+    var backupList: [URL] { guardian.backups() }
+
     func restore() {
         do {
             try guardian.restoreLatest(expectedHash: loadedHash)
             load()
             statusMessage = String(localized: "Restored from latest backup.")
+        } catch {
+            fail(error.localizedDescription)
+        }
+    }
+
+    func restore(from backup: URL) {
+        do {
+            try guardian.restore(from: backup, expectedHash: loadedHash)
+            load()
+            statusMessage = String(localized: "Restored from backup.")
         } catch {
             fail(error.localizedDescription)
         }
@@ -272,4 +328,11 @@ struct HookEditEntry: Identifiable {
     /// Original group dict for existing entries — replayed verbatim on save to preserve
     /// any non-command hook fields. nil for newly added entries.
     var raw: [String: Any]?
+
+    /// Hooks in this group that aren't `command` type (url, mcp, …) — preserved on
+    /// save but not editable here; surfaced so deleting the group isn't a surprise.
+    var otherHookCount: Int {
+        guard let raw, let hooks = raw["hooks"] as? [[String: Any]] else { return 0 }
+        return hooks.filter { ($0["command"] as? String) == nil }.count
+    }
 }

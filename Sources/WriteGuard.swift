@@ -30,7 +30,15 @@ struct WriteGuard {
 
     /// Atomic write gated by stale check; backs up the on-disk version first.
     func commit(_ newData: Data, expectedHash: String) throws {
-        let onDisk = try Data(contentsOf: fileURL)
+        guard let onDisk = try? Data(contentsOf: fileURL) else {
+            // No file on disk — either it never existed (fresh install) or it was
+            // deleted externally while editing. Nothing to protect or back up:
+            // create it so the user's work isn't trapped in the editor.
+            try FileManager.default.createDirectory(
+                at: fileURL.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try newData.write(to: fileURL, options: .atomic)
+            return
+        }
         guard Self.hash(onDisk) == expectedHash else { throw WriteGuardError.staleFile }
         try backup(onDisk)
         try newData.write(to: fileURL, options: .atomic)
@@ -48,7 +56,12 @@ struct WriteGuard {
     /// Restore newest backup (itself backs up the current file first).
     func restoreLatest(expectedHash: String) throws {
         guard let latest = backups().first else { throw WriteGuardError.noBackup }
-        let data = try Data(contentsOf: latest)
+        try restore(from: latest, expectedHash: expectedHash)
+    }
+
+    /// Restore a specific backup (itself backs up the current file first).
+    func restore(from backup: URL, expectedHash: String) throws {
+        let data = try Data(contentsOf: backup)
         try commit(data, expectedHash: expectedHash)
     }
 

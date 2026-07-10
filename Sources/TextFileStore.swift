@@ -10,11 +10,15 @@ final class TextFileStore: ObservableObject, GuardedStore {
     @Published var isError = false
     @Published var isStale = false
     @Published var canRestore = false
+    /// SwiftUI's TextEditor degrades on very large documents — the editor shows a
+    /// heads-up banner instead of silently lagging.
+    @Published var isLarge = false
 
     private var loadedHash = ""
     private var origText = ""
     private let fileURL: URL
     private let guardian: WriteGuard
+    private var watcher: FileWatcher?
 
     init(path: String) {
         let url = URL(fileURLWithPath: path).resolvingSymlinksInPath()
@@ -24,6 +28,26 @@ final class TextFileStore: ObservableObject, GuardedStore {
         let claude = FileManager.default.homeDirectoryForCurrentUser.appending(path: ".claude")
         self.guardian = WriteGuard(fileURL: url, backupDir: claude.appending(path: "backups"))
         load()
+        watcher = FileWatcher(url: url) { [weak self] in self?.externalChange() }
+    }
+
+    /// External change detected by the watcher: our own writes are filtered by hash;
+    /// clean state reloads silently, dirty state raises the stale banner instead of
+    /// clobbering the user's edits.
+    private func externalChange() {
+        guard let data = try? Data(contentsOf: fileURL) else {
+            isStale = true
+            statusMessage = String(localized: "File removed on disk — Save will recreate it.")
+            return
+        }
+        if WriteGuard.hash(data) == loadedHash { return }
+        if hasChanges {
+            isStale = true
+            statusMessage = String(localized: "Changed on disk — Reload takes the disk version; your unsaved edits are kept until then.")
+        } else {
+            load()
+            statusMessage = String(localized: "Reloaded — the file changed on disk.")
+        }
     }
 
     var hasChanges: Bool { text != origText }
@@ -40,6 +64,7 @@ final class TextFileStore: ObservableObject, GuardedStore {
         text = String(decoding: data, as: UTF8.self)
         origText = text
         loadedHash = WriteGuard.hash(data)
+        isLarge = data.count > 500_000
         canRestore = !guardian.backups().isEmpty
     }
 
@@ -77,11 +102,23 @@ final class TextFileStore: ObservableObject, GuardedStore {
         }
     }
 
+    var backupList: [URL] { guardian.backups() }
+
     func restore() {
         do {
             try guardian.restoreLatest(expectedHash: loadedHash)
             load()
             statusMessage = String(localized: "Restored from latest backup.")
+        } catch {
+            fail(error.localizedDescription)
+        }
+    }
+
+    func restore(from backup: URL) {
+        do {
+            try guardian.restore(from: backup, expectedHash: loadedHash)
+            load()
+            statusMessage = String(localized: "Restored from backup.")
         } catch {
             fail(error.localizedDescription)
         }

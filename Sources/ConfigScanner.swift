@@ -92,15 +92,17 @@ struct ConfigScanner {
     /// of listing the folder itself, so every command is an openable file — Claude
     /// Code invokes these as `/git:commit`, so nested names join with ":" to match.
     private func scanCommands(_ errors: inout [String]) -> [Command] {
-        scanCommandDir(claudeDir.appending(path: "commands"), namespace: nil)
+        scanCommandDir(claudeDir.appending(path: "commands"), namespace: nil, depth: 0)
     }
 
-    private func scanCommandDir(_ dir: URL, namespace: String?) -> [Command] {
+    private func scanCommandDir(_ dir: URL, namespace: String?, depth: Int) -> [Command] {
+        // Depth cap guards against symlink cycles (entries() follows symlinks).
+        guard depth < 10 else { return [] }
         var commands: [Command] = []
         for item in entries(of: dir) {
             if isDirectory(item) {
                 let ns = namespace.map { "\($0):\(item.lastPathComponent)" } ?? item.lastPathComponent
-                commands += scanCommandDir(item, namespace: ns)
+                commands += scanCommandDir(item, namespace: ns, depth: depth + 1)
             } else if item.pathExtension == "md" {
                 let name = item.deletingPathExtension().lastPathComponent
                 commands.append(Command(
