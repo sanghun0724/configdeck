@@ -129,7 +129,7 @@ private struct BackupBadge: View {
             Circle()
                 .fill(latest == nil ? Theme.inkTertiary : Theme.success)
                 .frame(width: 7, height: 7)
-            Text(latest.map { String(localized: "Backed up · \(relativeTime($0))") } ?? String(localized: "No backup"))
+            Text(latest.map { String(localized: "Backed up · \(relativeTime($0))") } ?? String(localized: "No backups yet"))
                 .font(.system(size: 11))
         }
         .foregroundStyle(latest == nil ? Theme.inkTertiary : Theme.successInk)
@@ -138,7 +138,9 @@ private struct BackupBadge: View {
         .background(latest == nil ? Theme.divider : Theme.successSoft)
         .clipShape(RoundedRectangle(cornerRadius: 7, style: .continuous))
         .task(id: rescanTrigger) { refresh() }
-        .help("Latest backup in ~/.claude/backups")
+        .help(latest == nil
+            ? "Backups are created automatically the first time you save — stored in ~/.claude/backups"
+            : "Latest backup in ~/.claude/backups")
     }
 
     private func refresh() {

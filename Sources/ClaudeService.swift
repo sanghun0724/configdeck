@@ -31,7 +31,7 @@ enum ClaudeServiceError: LocalizedError {
         case .notFound:
             return String(localized: "The `claude` CLI wasn't found in the usual locations.")
         case .badOutput(let s):
-            return String(localized: "Couldn't read the CLI response.\n\(s.prefix(300))")
+            return String(localized: "Couldn't read the CLI response.\n\(String(s.prefix(300)))")
         case .cliError(let s):
             return s
         }

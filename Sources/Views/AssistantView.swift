@@ -284,7 +284,7 @@ private struct AnalyzePane: View {
             let reply = try await assistant.service.run(prompt: prompt)
             assistant.suggestions = Self.parse(reply.text)
             if assistant.suggestions.isEmpty, !reply.text.contains("[]") {
-                assistant.error = String(localized: "The model didn't return a usable list. Raw reply:\n\(reply.text.prefix(300))")
+                assistant.error = String(localized: "The model didn't return a usable list. Raw reply:\n\(String(reply.text.prefix(300)))")
             }
         } catch {
             assistant.error = error.localizedDescription

@@ -757,6 +757,34 @@
         }
       }
     },
+    "Backups are created automatically the first time you save — stored in ~/.claude/backups": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Las copias de seguridad se crean automáticamente al guardar por primera vez — se guardan en ~/.claude/backups"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックアップは最初の保存時に自動で作成されます — ~/.claude/backups に保存"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "백업은 처음 저장할 때 자동으로 생성됩니다 — ~/.claude/backups에 보관"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "首次保存时会自动创建备份 — 存放在 ~/.claude/backups"
+          }
+        }
+      }
+    },
     "Cancel": {
       "localizations": {
         "es": {
@@ -2549,34 +2577,6 @@
         }
       }
     },
-    "No backup": {
-      "localizations": {
-        "es": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "Sin copia de seguridad"
-          }
-        },
-        "ja": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "バックアップなし"
-          }
-        },
-        "ko": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "백업 없음"
-          }
-        },
-        "zh-Hans": {
-          "stringUnit": {
-            "state": "translated",
-            "value": "无备份"
-          }
-        }
-      }
-    },
     "No backup available to restore.": {
       "localizations": {
         "es": {
@@ -2601,6 +2601,34 @@
           "stringUnit": {
             "state": "translated",
             "value": "没有可用于恢复的备份。"
+          }
+        }
+      }
+    },
+    "No backups yet": {
+      "localizations": {
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Aún no hay copias de seguridad"
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "バックアップはまだありません"
+          }
+        },
+        "ko": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "아직 백업 없음"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "尚无备份"
           }
         }
       }
