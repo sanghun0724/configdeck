@@ -79,10 +79,22 @@ Claude Code 설정은 수많은 파일과 디렉토리(`skills/`, `agents/`,
 
 ## 설치
 
+### 빠른 설치 (Gatekeeper 팝업 없음)
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/sanghun0724/configdeck/main/install.sh | sh
+```
+
+최신 릴리즈를 받아 `/Applications`에 설치합니다. 앱이 아직
+공증(notarize)되지 않았지만 ([팝업이 뜨는 이유](#not-notarized)) —
+curl 다운로드에는 격리 플래그가 붙지 않아 이 경로는 팝업을 완전히
+건너뜁니다. 걱정되면 [스크립트](install.sh)를 먼저 읽어보세요. 50줄 정도입니다.
+
 ### Homebrew
 
 ```sh
 brew install --cask sanghun0724/tap/configdeck
+xattr -cr /Applications/ConfigDeck.app   # Gatekeeper 격리 플래그 제거
 ```
 
 ### 다운로드
@@ -90,12 +102,12 @@ brew install --cask sanghun0724/tap/configdeck
 [Releases](https://github.com/sanghun0724/configdeck/releases)에서 최신
 `.zip`을 받아 압축을 풀고 `ConfigDeck.app`을 Applications로 드래그하세요.
 
-아직 공증(notarize)되지 않은 앱입니다. 첫 실행 시 macOS가 차단하면 —
-앱을 우클릭 → **열기** → **열기**, 또는 격리 플래그를 제거하세요:
-
-```sh
-xattr -cr /Applications/ConfigDeck.app
-```
+<a name="not-notarized"></a>
+Homebrew·브라우저 다운로드에는 격리 플래그가 붙고 ConfigDeck은 아직
+공증되지 않았기 때문에, 첫 실행 시 macOS가 차단합니다.
+`xattr -cr /Applications/ConfigDeck.app`을 실행하거나,
+**시스템 설정 → 개인정보 보호 및 보안**에서 **그래도 열기**를 누르세요
+(macOS 14에서는 앱 우클릭 → **열기** → **열기**도 가능).
 
 ### 소스 빌드
 

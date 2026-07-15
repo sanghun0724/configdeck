@@ -77,10 +77,22 @@ your user. Review the source before running a build you didn't compile yourself.
 
 ## Install
 
+### Quick install (no Gatekeeper popup)
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/sanghun0724/configdeck/main/install.sh | sh
+```
+
+Downloads the latest release and installs it to `/Applications`. The app is
+not notarized yet ([why the popup happens](#not-notarized)) — curl-based
+downloads carry no quarantine flag, so this path skips the popup entirely.
+[Read the script](install.sh) first if you like; it's ~50 lines.
+
 ### Homebrew
 
 ```sh
 brew install --cask sanghun0724/tap/configdeck
+xattr -cr /Applications/ConfigDeck.app   # clear the Gatekeeper quarantine flag
 ```
 
 ### Download
@@ -88,12 +100,12 @@ brew install --cask sanghun0724/tap/configdeck
 Grab the latest `.zip` from [Releases](https://github.com/sanghun0724/configdeck/releases),
 unzip, and drag `ConfigDeck.app` to Applications.
 
-The app is not notarized yet. On first launch macOS will block it — either
-right-click the app → **Open** → **Open**, or clear the quarantine flag:
-
-```sh
-xattr -cr /Applications/ConfigDeck.app
-```
+<a name="not-notarized"></a>
+Homebrew and browser downloads are quarantined, and ConfigDeck is not
+notarized yet, so on first launch macOS will block it. Either run
+`xattr -cr /Applications/ConfigDeck.app`, or open
+**System Settings → Privacy & Security** and click **Open Anyway**
+(on macOS 14 you can also right-click the app → **Open** → **Open**).
 
 ### Build from source
 
