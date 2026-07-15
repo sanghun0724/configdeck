@@ -140,8 +140,7 @@ struct FileEditorView: View {
                 .lineSpacing(MarkdownTheme.lineSpacing)
                 .autocorrectionDisabled()
                 .padding(.vertical, 16)
-                .frame(maxWidth: MarkdownTheme.measure)
-                .frame(maxWidth: .infinity)
+                .padding(.horizontal, MarkdownTheme.editorInset)
         }
     }
 

@@ -14,8 +14,8 @@ struct MarkdownPreview: View {
                 }
             }
             .padding(.vertical, 20)
-            .frame(maxWidth: MarkdownTheme.measure, alignment: .leading)
-            .frame(maxWidth: .infinity)   // center the measure
+            .padding(.horizontal, MarkdownTheme.editorInset)
+            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

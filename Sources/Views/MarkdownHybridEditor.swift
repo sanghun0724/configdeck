@@ -16,7 +16,7 @@ struct MarkdownHybridEditor: NSViewRepresentable {
     func makeCoordinator() -> Coordinator { Coordinator(self) }
 
     func makeNSView(context: Context) -> NSScrollView {
-        let scroll = MeasuredTextView.scrollableTextView()
+        let scroll = NSTextView.scrollableTextView()
         guard let textView = scroll.documentView as? NSTextView else { return scroll }
 
         textView.delegate = context.coordinator
@@ -27,7 +27,7 @@ struct MarkdownHybridEditor: NSViewRepresentable {
         textView.isAutomaticSpellingCorrectionEnabled = false
         textView.usesFindBar = true
         textView.font = MarkdownStyler.baseFont
-        textView.textContainerInset = NSSize(width: 0, height: 16)
+        textView.textContainerInset = NSSize(width: MarkdownTheme.editorInset, height: 16)
         textView.string = text
         context.coordinator.textView = textView
         context.coordinator.fullRestyle(textView)
@@ -96,17 +96,5 @@ struct MarkdownHybridEditor: NSViewRepresentable {
             let ns = tv.string as NSString
             lastActiveParagraph = ns.paragraphRange(for: NSRange(location: min(sel.location, ns.length), length: 0))
         }
-    }
-}
-
-/// NSTextView that keeps the text column at the research measure (~66ch) and
-/// centers it by padding the container insets as the view resizes.
-final class MeasuredTextView: NSTextView {
-    override func layout() {
-        let pad = max(0, (bounds.width - MarkdownTheme.measure) / 2)
-        if abs(textContainerInset.width - pad) > 0.5 {
-            textContainerInset = NSSize(width: pad, height: textContainerInset.height)
-        }
-        super.layout()
     }
 }

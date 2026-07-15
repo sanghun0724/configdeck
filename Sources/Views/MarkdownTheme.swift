@@ -9,8 +9,10 @@ enum MarkdownTheme {
     /// font size lands the effective line-height near 1.5×.
     static let lineSpacing: CGFloat = bodySize * 0.5
     static let paragraphSpacing: CGFloat = bodySize * 0.9
-    /// ~66ch measure for SF Pro at 16pt (avg glyph ≈ 8.7pt).
-    static let measure: CGFloat = 580
+    /// Side inset for the editor column. The column tracks the pane width
+    /// instead of a fixed measure — config files carry code blocks and long
+    /// lines, so a capped column hurts editing.
+    static let editorInset: CGFloat = 28
 
     static func headingSize(_ level: Int) -> CGFloat {
         switch level {
