@@ -1,9 +1,11 @@
+import AppKit
 import SwiftUI
 
 enum ConfigSection: String, CaseIterable, Identifiable {
     case skills = "Skills"
     case agents = "Agents"
     case commands = "Commands"
+    case sessions = "Sessions"
     case mcp = "MCP Servers"
     case hooks = "Hooks"
     case settings = "Settings"
@@ -32,22 +34,32 @@ struct AppShell: View {
     @StateObject private var settings = SettingsStore()
     @StateObject private var mcp = MCPStore()
     @StateObject private var assistant = AssistantStore()
+    @StateObject private var sessions = SessionsStore()
     @StateObject private var editorDirty = EditorDirtyState()
+    @State private var availableUpdate: String?
+    /// Tag the user dismissed — that version stays hidden, the next one banners again.
+    @AppStorage("skippedUpdateVersion") private var skippedUpdateVersion = ""
 
     var body: some View {
-        HStack(spacing: 0) {
-            SidebarView(
-                selection: guardedSelection,
-                counts: count,
-                onReload: { Task { await reload() } },
-                isScanning: isScanning
-            )
-            detail
+        VStack(spacing: 0) {
+            if let tag = availableUpdate, tag != skippedUpdateVersion {
+                UpdateBanner(tag: tag, onSkip: { skippedUpdateVersion = tag })
+            }
+            HStack(spacing: 0) {
+                SidebarView(
+                    selection: guardedSelection,
+                    counts: count,
+                    onReload: { Task { await reload() } },
+                    isScanning: isScanning
+                )
+                detail
+            }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Theme.bg)
         .environmentObject(editorDirty)
         .task { await reload() }
+        .task { availableUpdate = await UpdateChecker.checkForUpdate() }
         .confirmationDialog(
             "Discard unsaved changes?",
             isPresented: Binding(
@@ -104,6 +116,8 @@ struct AppShell: View {
             AgentsView(agents: data.agents, dir: "\(data.claudeDir)/agents", onChange: triggerReload)
         case .commands:
             CommandsView(commands: data.commands, dir: "\(data.claudeDir)/commands", onChange: triggerReload)
+        case .sessions:
+            SessionsView(store: sessions)
         case .mcp:
             MCPView(store: mcp, onChange: triggerReload)
         case .hooks:
@@ -120,6 +134,7 @@ struct AppShell: View {
         case .skills: return data.skills.count
         case .agents: return data.agents.count
         case .commands: return data.commands.count
+        case .sessions: return -1   // no launch-time scan of ~/.claude/projects — sidebar hides it
         case .mcp: return data.mcpServers.count
         case .hooks: return data.hooks.count
         case .settings: return data.allow.count + data.deny.count + data.ask.count + data.envVars.count
@@ -137,6 +152,46 @@ struct AppShell: View {
         data = scanned
         hasLoaded = true
         isScanning = false
+    }
+}
+
+/// Thin top bar shown when a newer release exists. The curl installer is the
+/// only update path, so the action is "copy the install command", not download.
+private struct UpdateBanner: View {
+    let tag: String
+    let onSkip: () -> Void
+    @State private var copied = false
+
+    var body: some View {
+        HStack(spacing: Theme.Space.sm) {
+            Image(systemName: "arrow.up.circle.fill")
+                .foregroundStyle(Theme.accent)
+            Text("ConfigDeck \(tag) is available")
+                .font(.system(size: 12, weight: .medium))
+                .foregroundStyle(Theme.accentStrong)
+            Spacer()
+            Button {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(UpdateChecker.installCommand, forType: .string)
+                copied = true
+            } label: {
+                Text(copied ? "Copied" : "Copy Install Command")
+                    .font(.system(size: 11, weight: .medium))
+            }
+            .buttonStyle(.bordered)
+            .controlSize(.small)
+            Button(action: onSkip) {
+                Image(systemName: "xmark")
+                    .font(.system(size: 9, weight: .semibold))
+                    .foregroundStyle(Theme.inkSecondary)
+            }
+            .buttonStyle(.plain)
+            .help("Skip this version")
+        }
+        .padding(.horizontal, Theme.Space.md)
+        .padding(.vertical, 6)
+        .background(Theme.accentSoft)
+        .overlay(alignment: .bottom) { Theme.border.frame(height: 1) }
     }
 }
 

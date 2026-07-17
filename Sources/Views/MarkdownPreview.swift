@@ -8,14 +8,24 @@ struct MarkdownPreview: View {
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: MarkdownTheme.paragraphSpacing) {
-                ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
-                    block.view
-                }
+            MarkdownBlocksView(text: text)
+                .padding(.vertical, 20)
+                .padding(.horizontal, MarkdownTheme.editorInset)
+                .frame(maxWidth: .infinity, alignment: .leading)
+        }
+    }
+}
+
+/// The block stack without scroll chrome — embeddable inside an outer scroll
+/// (e.g. one assistant turn in the session viewer).
+struct MarkdownBlocksView: View {
+    let text: String
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: MarkdownTheme.paragraphSpacing) {
+            ForEach(Array(blocks.enumerated()), id: \.offset) { _, block in
+                block.view
             }
-            .padding(.vertical, 20)
-            .padding(.horizontal, MarkdownTheme.editorInset)
-            .frame(maxWidth: .infinity, alignment: .leading)
         }
     }
 

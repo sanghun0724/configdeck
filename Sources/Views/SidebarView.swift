@@ -11,7 +11,7 @@ struct SidebarView: View {
     var isScanning: Bool
 
     private static let groups: [(kicker: String, sections: [ConfigSection])] = [
-        (String(localized: "Library"), [.skills, .agents, .commands]),
+        (String(localized: "Library"), [.skills, .agents, .commands, .sessions]),
         (String(localized: "System"), [.hooks, .mcp, .settings]),
         (String(localized: "Tools"), [.assistant]),
     ]
